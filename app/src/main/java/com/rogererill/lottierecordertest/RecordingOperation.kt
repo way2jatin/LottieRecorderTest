@@ -6,7 +6,7 @@ class RecordingOperation(
     private val listener: () -> Unit
 ) {
 
-  fun start() {
+  suspend fun start() {
     while (isRecording()) {
       recorder.nextFrame(frameCreator.generateFrame())
     }

@@ -10,6 +10,8 @@ import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.util.Log
 import android.view.Surface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.Closeable
 import java.io.File
 import java.nio.ByteBuffer
@@ -69,12 +71,14 @@ class Recorder(
     createMediaMuxer(videoOutput)
   }
 
-  fun nextFrame(currentFrame: Drawable) {
+  suspend fun nextFrame(currentFrame: Drawable) {
     drainEncoder(false)
     val canvas = inputSurface.lockCanvas(null)
     try {
       canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)  // Here you need to set some kind of background. Could be any color
-      currentFrame.draw(canvas)
+      withContext(Dispatchers.Main) {
+        currentFrame.draw(canvas)
+      }
     } finally {
       inputSurface.unlockCanvasAndPost(canvas)
     }
